@@ -9,6 +9,8 @@
   <meta property="og:description" content="Drop it on every mic. Press play. Done. A speech automixer plugin for interviews and podcasts.">
   <meta property="og:image" content="https://timothycuenat.github.io/automixer/assets/screenshot.png">
   <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+  <!-- Statistiques de visite GoatCounter : sans cookies, pas de bannière de consentement. -->
+  <script data-goatcounter="https://tim-automixer.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -249,8 +251,8 @@
           <h3>macOS</h3>
         </header>
         <p class="req">macOS 11 or later · Apple Silicon &amp; Intel · AU + VST3</p>
-        <a class="btn" href="https://github.com/timothycuenat/automixer/releases/latest/download/TIM-Automixer-macOS.pkg">Download installer (.pkg)</a>
-        <p class="alt">or <a href="https://github.com/timothycuenat/automixer/releases/latest/download/TIM-Automixer-macOS.zip">the .zip</a> to install by hand</p>
+        <a class="btn" data-track="download-macos-pkg" data-track-title="Download macOS installer (.pkg)" href="https://github.com/timothycuenat/automixer/releases/latest/download/TIM-Automixer-macOS.pkg">Download installer (.pkg)</a>
+        <p class="alt">or <a data-track="download-macos-zip" data-track-title="Download macOS .zip" href="https://github.com/timothycuenat/automixer/releases/latest/download/TIM-Automixer-macOS.zip">the .zip</a> to install by hand</p>
         <details>
           <summary>macOS says the installer can’t be opened?</summary>
           <p>Right-click the file → <strong>Open</strong> → <strong>Open</strong>. If your software doesn’t list the plugin after installing, paste this in the Terminal and restart the software:</p>
@@ -264,8 +266,8 @@
           <h3>Windows</h3>
         </header>
         <p class="req">Windows 10 / 11 · 64-bit · VST3</p>
-        <a class="btn" href="https://github.com/timothycuenat/automixer/releases/latest/download/TIM-Automixer-Windows-Setup.exe">Download installer (.exe)</a>
-        <p class="alt">or <a href="https://github.com/timothycuenat/automixer/releases/latest/download/TIM-Automixer-Windows-VST3.zip">the .zip</a> to install by hand</p>
+        <a class="btn" data-track="download-windows-exe" data-track-title="Download Windows installer (.exe)" href="https://github.com/timothycuenat/automixer/releases/latest/download/TIM-Automixer-Windows-Setup.exe">Download installer (.exe)</a>
+        <p class="alt">or <a data-track="download-windows-zip" data-track-title="Download Windows .zip" href="https://github.com/timothycuenat/automixer/releases/latest/download/TIM-Automixer-Windows-VST3.zip">the .zip</a> to install by hand</p>
         <details>
           <summary>“Windows protected your PC”?</summary>
           <p>Click <strong>More info</strong> → <strong>Run anyway</strong>. The plugin is installed in <code>C:\Program Files\Common Files\VST3</code> and can be removed from Settings → Apps.</p>
@@ -294,10 +296,19 @@
       card.classList.add("current");
       const hero = document.getElementById("hero-download");
       hero.href = card.querySelector(".btn").href;
+      hero.setAttribute("data-track", "download-hero-" + (os === "mac" ? "macos" : "windows"));
+      hero.setAttribute("data-track-title", "Hero download button (" + (os === "mac" ? "macOS" : "Windows") + ")");
       document.getElementById("hero-download-label").textContent = "Download for " + (os === "mac" ? "macOS" : "Windows");
     } else {
       document.getElementById("hero-download-label").textContent = "Download";
     }
+
+    // Clics de téléchargement comptés comme « événements » GoatCounter (un nom par bouton).
+    document.addEventListener("click", function (e) {
+      const link = e.target.closest("[data-track]");
+      if (link && window.goatcounter && window.goatcounter.count)
+        window.goatcounter.count({ path: link.dataset.track, title: link.dataset.trackTitle || link.dataset.track, event: true });
+    });
 
     // Numéro de la dernière version, lu sur GitHub (repli : texte générique).
     fetch("https://api.github.com/repos/timothycuenat/automixer/releases/latest")
