@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TIM Automixer — clean multi-mic dialogue, automatically</title>
+  <meta name="description" content="A speech automixer plugin (AU / VST3) for interviews, panels and podcasts. Drop it on every mic track, press play, done.">
+  <meta property="og:title" content="TIM Automixer">
+  <meta property="og:description" content="Drop it on every mic. Press play. Done. A speech automixer plugin for interviews and podcasts.">
+  <meta property="og:image" content="https://timothycuenat.github.io/tim-automixer-site/assets/screenshot.png">
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0d0f12;
+      --surface: #15181c;
+      --card: #1a1d21;
+      --control: #22262b;
+      --line: #262a30;
+      --text: #e9ebee;
+      --soft: #a3abb5;
+      --muted: #7d8590;
+      --accent: #4fc3e8;
+      --accent-deep: #183039;
+      --violet: #b18cf5;
+      --amber: #f2b45a;
+      --radius: 14px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; }
+    img { max-width: 100%; display: block; }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+    /* Navigation */
+    nav { position: sticky; top: 0; z-index: 10; background: rgba(13, 15, 18, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.04); }
+    nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+    .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; font-weight: 700; letter-spacing: 0.16em; font-size: 15px; }
+    .brand img { width: 30px; height: 30px; }
+    .brand b { color: var(--accent); font-weight: 700; }
+    nav .links { display: flex; align-items: center; gap: 28px; font-size: 14px; }
+    nav .links a { text-decoration: none; color: var(--soft); }
+    nav .links a:hover { color: var(--text); }
+    .btn-small { background: var(--accent); color: #0d0f12 !important; padding: 8px 16px; border-radius: 8px; font-weight: 600; }
+
+    /* Héros */
+    .hero { padding: 96px 0 64px; text-align: center; position: relative; overflow: hidden; }
+    .hero::before {
+      content: ""; position: absolute; inset: -200px 0 auto 50%; width: 900px; height: 700px; transform: translateX(-50%);
+      background: radial-gradient(closest-side, rgba(79,195,232,0.18), transparent 70%); pointer-events: none;
+    }
+    .eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--soft); background: var(--surface); border: 1px solid var(--line); padding: 6px 14px; border-radius: 999px; }
+    .eyebrow i { width: 7px; height: 7px; border-radius: 50%; background: #3ddc84; display: inline-block; }
+    h1 { font-size: clamp(40px, 7vw, 76px); line-height: 1.05; letter-spacing: -0.03em; margin: 24px auto 20px; font-weight: 700; max-width: 900px; }
+    h1 span { background: linear-gradient(90deg, var(--accent), var(--violet) 55%, var(--amber)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .lead { font-size: clamp(17px, 2.2vw, 20px); color: var(--soft); max-width: 640px; margin: 0 auto; }
+    .cta { margin-top: 36px; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 12px; text-decoration: none; font-weight: 600; font-size: 16px;
+      background: var(--accent); color: #0d0f12; padding: 15px 28px; border-radius: 12px;
+      box-shadow: 0 8px 30px rgba(79,195,232,0.25); transition: transform .15s ease, box-shadow .15s ease;
+    }
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 12px 40px rgba(79,195,232,0.35); }
+    .btn svg { width: 20px; height: 20px; }
+    .cta small { color: var(--muted); font-size: 13px; }
+    .cta small a { color: var(--soft); }
+    .hero-shot { margin: 64px auto 0; max-width: 880px; position: relative; }
+    .hero-shot img { border-radius: 18px; border: 1px solid var(--line); box-shadow: 0 40px 120px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.02); }
+
+    /* Sections */
+    section { padding: 88px 0; }
+    .kicker { color: var(--accent); font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 600; }
+    h2 { font-size: clamp(30px, 4.4vw, 44px); line-height: 1.12; letter-spacing: -0.02em; margin: 12px 0 16px; font-weight: 700; }
+    .section-lead { color: var(--soft); max-width: 640px; font-size: 18px; margin: 0; }
+    .center { text-align: center; }
+    .center .section-lead { margin: 0 auto; }
+
+    /* Étapes */
+    .steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; margin-top: 48px; }
+    .step { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 28px; }
+    .step .num { width: 32px; height: 32px; border-radius: 50%; background: var(--accent); color: #0d0f12; display: grid; place-items: center; font-weight: 700; font-size: 15px; }
+    .step h3 { margin: 18px 0 8px; font-size: 20px; }
+    .step p { margin: 0; color: var(--soft); font-size: 15px; }
+
+    /* Problème / solution */
+    .split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 56px; align-items: center; }
+    .split ul { list-style: none; padding: 0; margin: 24px 0 0; display: grid; gap: 14px; }
+    .split li { display: flex; gap: 12px; color: var(--soft); }
+    .split li::before { content: ""; flex: none; width: 8px; height: 8px; margin-top: 9px; border-radius: 2px; background: var(--accent); }
+    /* Le schéma est large : texte sur deux colonnes, schéma en pleine largeur dessous. */
+    #how .split { grid-template-columns: 1fr; gap: 40px; }
+    #how .how-text { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 56px; align-items: start; }
+    #how .how-text .kicker, #how .how-text h2 { grid-column: 1; }
+    #how .how-text .section-lead { grid-column: 1; }
+    #how .how-text ul { grid-column: 2; grid-row: 1 / span 3; align-self: end; margin: 0; }
+    .figure { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 10px; }
+    .figure img { border-radius: 12px; }
+
+    /* Fonctions */
+    .features { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; margin-top: 48px; }
+    .feature { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 26px; }
+    .feature .icon { width: 40px; height: 40px; border-radius: 10px; background: var(--accent-deep); display: grid; place-items: center; color: var(--accent); }
+    .feature .icon svg { width: 20px; height: 20px; }
+    .feature h3 { margin: 16px 0 6px; font-size: 17px; }
+    .feature p { margin: 0; color: var(--soft); font-size: 15px; }
+
+    /* Galerie */
+    .gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; margin-top: 48px; }
+    .gallery figure { margin: 0; }
+    .gallery figcaption { color: var(--muted); font-size: 14px; margin-top: 12px; text-align: center; }
+
+    /* Téléchargement */
+    .downloads { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; margin-top: 48px; }
+    .platform { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 30px; display: flex; flex-direction: column; }
+    .platform.current { border-color: rgba(79,195,232,0.6); box-shadow: 0 0 0 1px rgba(79,195,232,0.25), 0 20px 60px rgba(79,195,232,0.08); }
+    .platform header { display: flex; align-items: center; gap: 14px; }
+    .platform header svg { width: 30px; height: 30px; color: var(--text); }
+    .platform h3 { margin: 0; font-size: 22px; }
+    .platform .req { color: var(--muted); font-size: 14px; margin: 6px 0 22px; }
+    .platform .btn { justify-content: center; }
+    .platform .alt { margin-top: 14px; font-size: 14px; color: var(--muted); text-align: center; }
+    .platform .alt a { color: var(--soft); }
+    .platform details { margin-top: 22px; border-top: 1px solid var(--line); padding-top: 16px; color: var(--soft); font-size: 14px; }
+    .platform summary { cursor: pointer; color: var(--text); font-weight: 500; }
+    .platform details p { margin: 10px 0 0; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; background: var(--bg); border: 1px solid var(--line); padding: 2px 6px; border-radius: 6px; word-break: break-all; }
+    .version-note { text-align: center; color: var(--muted); font-size: 14px; margin-top: 28px; }
+
+    footer { border-top: 1px solid var(--line); padding: 40px 0; color: var(--muted); font-size: 14px; }
+    footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+
+    @media (max-width: 860px) {
+      nav .links a:not(.btn-small) { display: none; }
+      .steps, .features, .gallery, .downloads, .split { grid-template-columns: 1fr; }
+      .split { gap: 32px; }
+      #how .how-text { grid-template-columns: 1fr; }
+      #how .how-text ul { grid-column: 1; grid-row: auto; margin-top: 24px; }
+      section { padding: 64px 0; }
+      .hero { padding-top: 64px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="#"><img src="assets/icon.svg" alt=""><span><b>TIM</b> AUTOMIXER</span></a>
+    <div class="links">
+      <a href="#how">How it works</a>
+      <a href="#features">Features</a>
+      <a class="btn-small" href="#download">Download</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow"><i></i>Plugin · AU &amp; VST3 · macOS &amp; Windows</span>
+    <h1>Drop it on every mic.<br><span>Press play. Done.</span></h1>
+    <p class="lead">Clean, natural dialogue from every lavalier — automatically. No gates to tune, no volume rides, no comb filtering.</p>
+    <div class="cta">
+      <a class="btn" id="hero-download" href="#download">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11m0 0l-4.5-4.5M12 15l4.5-4.5M5 19h14"/></svg>
+        <span id="hero-download-label">Download</span>
+      </a>
+      <small><span class="version">Latest version</span> · <a href="#download">Other platforms</a></small>
+    </div>
+    <div class="hero-shot"><img src="assets/screenshot.png" alt="TIM Automixer plugin window: gain history, one strip per microphone and group settings"></div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap center">
+    <div class="kicker">Three steps</div>
+    <h2>As simple as it gets</h2>
+    <p class="section-lead">No routing, no sidechain, no setup. Every instance finds the others on its own.</p>
+    <div class="steps" style="text-align:left">
+      <div class="step"><div class="num">1</div><h3>Drop it on every mic</h3><p>Insert TIM Automixer first on each lavalier track — in DaVinci Resolve, Logic, Premiere, Reaper…</p></div>
+      <div class="step"><div class="num">2</div><h3>Press play</h3><p>The tracks link automatically. Pick a preset like <em>Interview – 2 people</em> if you like.</p></div>
+      <div class="step"><div class="num">3</div><h3>Enjoy clean dialogue</h3><p>The person talking stays open, the others are turned down — smoothly, without clipping a single word.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap split">
+    <div class="how-text">
+      <div class="kicker">How it works</div>
+      <h2>It compares the mics, like your eyes do on the waveforms</h2>
+      <p class="section-lead">Every voice also reaches the other mics — later and quieter. That bleed makes dialogue hollow and phasey. Gates can't fix it: a voice moves over 30 dB, bleed is only 10–20 dB below.</p>
+      <ul>
+        <li>Each mic is compared with all the others, never with a fixed threshold.</li>
+        <li>Gain is shared: the speaker stays open, the others go down by their level difference.</li>
+        <li>When two people talk at once, they share the gain — the overall level stays constant.</li>
+      </ul>
+    </div>
+    <div class="figure how-figure"><img src="assets/how-it-works.svg" alt="Diagram: each mic hears the speaker and bleed; the automix compares all mics and keeps only the speaker open"></div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="wrap center">
+    <div class="kicker">Features</div>
+    <h2>Made for real-world interviews</h2>
+    <p class="section-lead">Rooms you don't control, mics close together, people talking over each other.</p>
+    <div class="features" style="text-align:left">
+      <div class="feature"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12h3l2-6 4 12 2-6h5"/></svg></div><h3>Voice-band detection</h3><p>Listens only to 150 Hz – 5 kHz and learns each mic's room noise. Rumble, hiss and air-con are ignored.</p></div>
+      <div class="feature"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 7h8M8 12h8M8 17h5"/><rect x="4" y="3" width="16" height="18" rx="3"/></svg></div><h3>Never clips a word</h3><p>Lookahead opens the mic just before the first syllable. Latency is reported and compensated by your host.</p></div>
+      <div class="feature"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 17c3 0 4-10 9-10s6 10 9 10"/></svg></div><h3>Natural transitions</h3><p>Smoothing keeps voices steady; Hold last mic keeps the room tone alive during pauses.</p></div>
+      <div class="feature"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v18M5 8v8M19 6v12"/></svg></div><h3>Contrast &amp; Depth</h3><p>Push bleed further down in reverberant rooms, or keep it gentle and airy. Up to 8 mics per group.</p></div>
+      <div class="feature"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 18l5-6 4 3 7-9"/></svg></div><h3>See the conversation</h3><p>Gain history, meters and a Speaking light per mic, in each mic's colour.</p></div>
+      <div class="feature"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 4h12v16l-6-4-6 4z"/></svg></div><h3>Presets &amp; tooltips</h3><p>Seven factory presets plus your own. Every control explains what it does and when to use it.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap center">
+    <div class="kicker">A closer look</div>
+    <h2>Everything at hand</h2>
+    <div class="gallery">
+      <figure><div class="figure"><img src="assets/presets.png" alt="Preset list" loading="lazy"></div><figcaption>Factory presets and your own, one click away.</figcaption></figure>
+      <figure><div class="figure"><img src="assets/group-picker.png" alt="Group picker" loading="lazy"></div><figcaption>Several conversations in one project? Use groups.</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section id="download">
+  <div class="wrap center">
+    <div class="kicker">Download</div>
+    <h2>Get TIM Automixer</h2>
+    <p class="section-lead">Install, restart your software, search for “TIM” in the effects list.</p>
+
+    <div class="downloads" style="text-align:left">
+      <article class="platform" data-os="mac">
+        <header>
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.37 12.6c-.02-2.3 1.88-3.4 1.96-3.46-1.07-1.56-2.73-1.78-3.32-1.8-1.41-.14-2.76.83-3.48.83-.72 0-1.82-.81-3-.79-1.54.02-2.96.9-3.76 2.28-1.6 2.78-.41 6.9 1.15 9.16.76 1.1 1.67 2.34 2.86 2.3 1.15-.05 1.58-.74 2.97-.74 1.38 0 1.77.74 2.98.72 1.23-.02 2.01-1.12 2.76-2.23.87-1.28 1.23-2.52 1.25-2.58-.03-.01-2.4-.92-2.37-3.69zM14.1 5.86c.63-.77 1.06-1.83.94-2.89-.91.04-2.01.61-2.66 1.37-.58.67-1.09 1.75-.96 2.79 1.02.08 2.05-.52 2.68-1.27z"/></svg>
+          <h3>macOS</h3>
+        </header>
+        <p class="req">macOS 11 or later · Apple Silicon &amp; Intel · AU + VST3</p>
+        <a class="btn" href="https://github.com/timothycuenat/tim-automixer-site/releases/latest/download/TIM-Automixer-macOS.pkg">Download installer (.pkg)</a>
+        <p class="alt">or <a href="https://github.com/timothycuenat/tim-automixer-site/releases/latest/download/TIM-Automixer-macOS.zip">the .zip</a> to install by hand</p>
+        <details>
+          <summary>macOS says the installer can’t be opened?</summary>
+          <p>Right-click the file → <strong>Open</strong> → <strong>Open</strong>. If your software doesn’t list the plugin after installing, paste this in the Terminal and restart the software:</p>
+          <p><code>sudo xattr -dr com.apple.quarantine "/Library/Audio/Plug-Ins/Components/TIM Automixer.component" "/Library/Audio/Plug-Ins/VST3/TIM Automixer.vst3"</code></p>
+        </details>
+      </article>
+
+      <article class="platform" data-os="windows">
+        <header>
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 5.5l7.5-1v7H3zm0 13l7.5 1v-7H3zm8.5 1.1L21 21v-8.5h-9.5zm0-15.2V11.5H21V3z"/></svg>
+          <h3>Windows</h3>
+        </header>
+        <p class="req">Windows 10 / 11 · 64-bit · VST3</p>
+        <a class="btn" href="https://github.com/timothycuenat/tim-automixer-site/releases/latest/download/TIM-Automixer-Windows-Setup.exe">Download installer (.exe)</a>
+        <p class="alt">or <a href="https://github.com/timothycuenat/tim-automixer-site/releases/latest/download/TIM-Automixer-Windows-VST3.zip">the .zip</a> to install by hand</p>
+        <details>
+          <summary>“Windows protected your PC”?</summary>
+          <p>Click <strong>More info</strong> → <strong>Run anyway</strong>. The plugin is installed in <code>C:\Program Files\Common Files\VST3</code> and can be removed from Settings → Apps.</p>
+        </details>
+      </article>
+    </div>
+
+    <p class="version-note"><span class="version">Latest version</span> · <a href="https://github.com/timothycuenat/tim-automixer-site/releases">All releases &amp; notes</a> · Use the same format (AU or VST3) on every track of a conversation.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>Designed by <strong style="color:var(--soft)">Timothy Cuenat</strong> — sound engineer, photographer &amp; filmmaker.</span>
+    <span>Inspired by Dan Dugan’s gain-sharing automixer · Built with JUCE</span>
+  </div>
+</footer>
+
+<script>
+  // Met en avant le téléchargement correspondant au système du visiteur.
+  (function () {
+    const ua = navigator.userAgent;
+    const os = /Windows/i.test(ua) ? "windows" : /Mac/i.test(ua) ? "mac" : null;
+    const card = os && document.querySelector('.platform[data-os="' + os + '"]');
+    if (card) {
+      card.classList.add("current");
+      const hero = document.getElementById("hero-download");
+      hero.href = card.querySelector(".btn").href;
+      document.getElementById("hero-download-label").textContent = "Download for " + (os === "mac" ? "macOS" : "Windows");
+    } else {
+      document.getElementById("hero-download-label").textContent = "Download";
+    }
+
+    // Numéro de la dernière version, lu sur GitHub (repli : texte générique).
+    fetch("https://api.github.com/repos/timothycuenat/tim-automixer-site/releases/latest")
+      .then(r => r.ok ? r.json() : null)
+      .then(release => {
+        if (!release || !release.tag_name) return;
+        document.querySelectorAll(".version").forEach(el => el.textContent = "Version " + release.tag_name.replace(/^v/, ""));
+      })
+      .catch(() => {});
+  })();
+</script>
+</body>
+</html>

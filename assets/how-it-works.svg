@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 320" width="960" height="320" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <title>How TIM Automixer works</title>
+  <desc>Each microphone hears the person speaking, plus fainter bleed from the others. The automix compares all mics, keeps the speaker's mic open and turns the others down by their level difference.</desc>
+  <rect width="960" height="320" rx="16" fill="#121417"/>
+
+  <!-- Colonne 1 : ce que chaque micro entend -->
+  <text x="40" y="48" fill="#7d8590" font-size="12" letter-spacing="1.2">WHAT EACH MIC HEARS</text>
+  <text x="40" y="70" fill="#5c646e" font-size="12">The interviewer speaks. The guests' mics pick up bleed.</text>
+
+  <g font-size="13" fill="#e9ebee">
+    <text x="40" y="118">Interviewer</text>
+    <text x="40" y="178">Guest A</text>
+    <text x="40" y="238">Guest B</text>
+  </g>
+  <rect x="140" y="104" width="190" height="18" rx="4" fill="#0d0f11"/>
+  <rect x="140" y="104" width="180" height="18" rx="4" fill="#4fc3e8"/>
+  <rect x="140" y="164" width="190" height="18" rx="4" fill="#0d0f11"/>
+  <rect x="140" y="164" width="72" height="18" rx="4" fill="#b18cf5" fill-opacity="0.55"/>
+  <rect x="140" y="224" width="190" height="18" rx="4" fill="#0d0f11"/>
+  <rect x="140" y="224" width="60" height="18" rx="4" fill="#f2b45a" fill-opacity="0.55"/>
+  <g font-size="12" fill="#9aa3ad">
+    <text x="140" y="140">voice</text>
+    <text x="140" y="200">bleed, 15 dB lower</text>
+    <text x="140" y="260">bleed, 17 dB lower</text>
+  </g>
+
+  <!-- Colonne 2 : comparaison -->
+  <rect x="372" y="128" width="164" height="88" rx="12" fill="#1a1d21"/>
+  <text x="454" y="160" fill="#e9ebee" font-size="13" text-anchor="middle">Compare all mics</text>
+  <text x="454" y="184" fill="#9aa3ad" font-size="12" text-anchor="middle">gain = level ÷ sum</text>
+  <text x="454" y="202" fill="#9aa3ad" font-size="12" text-anchor="middle">of all levels</text>
+  <path d="M346 172 L366 172" stroke="#5c646e" stroke-width="2"/>
+  <path d="M362 166 L368 172 L362 178" fill="none" stroke="#5c646e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M542 172 L562 172" stroke="#5c646e" stroke-width="2"/>
+  <path d="M558 166 L564 172 L558 178" fill="none" stroke="#5c646e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Colonne 3 : résultat -->
+  <text x="584" y="48" fill="#7d8590" font-size="12" letter-spacing="1.2">WHAT YOU GET</text>
+  <text x="584" y="70" fill="#5c646e" font-size="12">Clean voice, no comb filtering.</text>
+
+  <g>
+    <rect x="584" y="104" width="96" height="18" rx="6" fill="#4fc3e8"/>
+    <text x="632" y="117" fill="#121417" font-size="11" font-weight="600" text-anchor="middle">Speaking</text>
+    <text x="696" y="118" fill="#e9ebee" font-size="13">Interviewer</text>
+    <text x="920" y="118" fill="#e9ebee" font-size="13" text-anchor="end">0 dB</text>
+
+    <rect x="584" y="164" width="96" height="18" rx="6" fill="#22262b"/>
+    <text x="632" y="177" fill="#7d8590" font-size="11" text-anchor="middle">Silent</text>
+    <text x="696" y="178" fill="#e9ebee" font-size="13">Guest A</text>
+    <text x="920" y="178" fill="#f2994a" font-size="13" text-anchor="end">−15 dB</text>
+
+    <rect x="584" y="224" width="96" height="18" rx="6" fill="#22262b"/>
+    <text x="632" y="237" fill="#7d8590" font-size="11" text-anchor="middle">Silent</text>
+    <text x="696" y="238" fill="#e9ebee" font-size="13">Guest B</text>
+    <text x="920" y="238" fill="#f2994a" font-size="13" text-anchor="end">−17 dB</text>
+  </g>
+
+  <text x="480" y="292" fill="#5c646e" font-size="12" text-anchor="middle">When two people talk at once, they share the gain (−3 dB each): the overall level stays constant.</text>
+</svg>
