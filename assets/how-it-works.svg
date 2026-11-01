@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 320" width="960" height="320" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif">
-  <title>How TIM Automixer works</title>
+  <title>How TIM-Automixer works</title>
   <desc>Each microphone hears the person speaking, plus fainter bleed from the others. The automix compares all mics, keeps the speaker's mic open and turns the others down by their level difference.</desc>
   <rect width="960" height="320" rx="16" fill="#121417"/>
 
